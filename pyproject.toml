@@ -1,0 +1,17 @@
+[project]
+name = "docu-mentor-ai"
+version = "0.1.0"
+description = "Local Angular expert via RAG and Ollama"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 120
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

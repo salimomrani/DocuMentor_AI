@@ -3,6 +3,18 @@
 .vscode/
 *.iml
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+
 # OS
 .DS_Store
 Thumbs.db
@@ -10,3 +22,8 @@ Thumbs.db
 # Env
 .env
 .env.local
+
+# Data (local runtime)
+data/chroma/
+data/history/
+data/docs/
