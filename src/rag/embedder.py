@@ -32,12 +32,10 @@ def get_chroma_client():
 
 def get_vector_store() -> ChromaVectorStore:
     """Get ChromaDB vector store."""
-    chroma_client = get_chroma_client()
-    vector_store = ChromaVectorStore(
-        chroma_client=chroma_client,
+    return ChromaVectorStore.from_params(
+        persist_dir=str(settings.chroma_dir),
         collection_name=settings.chroma_collection_name,
     )
-    return vector_store
 
 
 def get_storage_context():
