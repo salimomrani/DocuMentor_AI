@@ -30,7 +30,7 @@ class Generator:
         )
         self.retriever = Retriever()
 
-    def generate(self, query: str) -> Answer:
+    def generate(self, query: str, conversation_history: list[dict] | None = None) -> Answer:
         """Generate an answer to the query using RAG."""
         # Retrieve relevant docs
         sources = self.retriever.get_sources(query)
@@ -45,8 +45,11 @@ class Generator:
         # Build context from sources
         context = self._build_context(sources)
 
+        # Build conversation history
+        history = self._build_history(conversation_history or [])
+
         # Build prompt with context
-        prompt = self._build_prompt(query, context)
+        prompt = self._build_prompt(query, context, history)
 
         # Generate response
         response = self.llm.complete(prompt)
@@ -69,8 +72,26 @@ class Generator:
             )
         return "\n\n".join(context_parts)
 
-    def _build_prompt(self, query: str, context: str) -> str:
+    def _build_history(self, conversation_history: list[dict]) -> str:
+        """Build conversation history string."""
+        if not conversation_history:
+            return ""
+        parts = []
+        for msg in conversation_history:
+            role = "Utilisateur" if msg.get("role") == "user" else "Assistant"
+            parts.append(f"{role}: {msg.get('content', '')}")
+        return "\n".join(parts)
+
+    def _build_prompt(self, query: str, context: str, history: str = "") -> str:
         """Build the full prompt with context."""
+        history_section = (
+            f"""CONVERSATION PRÉCÉDENTE:
+{history}
+
+"""
+            if history
+            else ""
+        )
         return f"""Tu es un expert Angular. Utilise UNIQUEMENT les documents fournis pour répondre à la question.
 
 INSTRUCTIONS:
@@ -79,7 +100,7 @@ INSTRUCTIONS:
 - Cite les sources quand tu utilises des informations des documents
 - Si l'information n'est pas dans les documents, dis "Non documenté"
 
-DOCUMENTS:
+{history_section}DOCUMENTS:
 {context}
 
 QUESTION: {query}

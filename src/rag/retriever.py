@@ -6,7 +6,7 @@ from llama_index.core import VectorStoreIndex
 from llama_index.core.retrievers import VectorIndexRetriever
 
 from src.config.settings import settings
-from src.rag.embedder import get_vector_store
+from src.rag.embedder import get_vector_store, Embedder
 
 
 class Retriever:
@@ -26,8 +26,10 @@ class Retriever:
             if self.vector_store is None:
                 return None
             try:
+                embedder = Embedder()
                 self._index = VectorStoreIndex.from_vector_store(
                     self.vector_store,
+                    embed_model=embedder.get_model(),
                 )
             except Exception:
                 return None

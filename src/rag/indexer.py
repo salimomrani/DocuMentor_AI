@@ -6,7 +6,7 @@ from llama_index.core import VectorStoreIndex
 
 from src.rag.loader import DocumentLoader
 from src.rag.splitter import TextSplitter
-from src.rag.embedder import get_storage_context, get_chroma_client
+from src.rag.embedder import get_storage_context, get_chroma_client, Embedder
 
 
 def index_documents() -> None:
@@ -38,10 +38,12 @@ def index_documents() -> None:
     nodes = splitter.split(texts)
 
     # Create index with storage context
+    embedder = Embedder()
     storage_context = get_storage_context()
     index = VectorStoreIndex(
         nodes=nodes,
         storage_context=storage_context,
+        embed_model=embedder.get_model(),
     )
 
     print(f"Indexed {len(nodes)} chunks from {len(texts)} documents")

@@ -35,8 +35,7 @@ def load_conversation(conversation_id: str) -> None:
     if conversation:
         st.session_state.conversation_id = conversation.id
         st.session_state.messages = [
-            {"role": msg.role, "content": msg.content, "sources": msg.sources}
-            for msg in conversation.messages
+            {"role": msg.role, "content": msg.content, "sources": msg.sources} for msg in conversation.messages
         ]
 
 
@@ -93,13 +92,13 @@ def handle_user_input(user_input: str) -> None:
     if generator is None:
         error_msg = st.session_state.get("generator_error", "Generator not initialized")
         st.error(f"Erreur: {error_msg}")
-        st.info(
-            "Assurez-vous qu'Ollama est en cours d'exécution et que les modèles sont installés."
-        )
+        st.info("Assurez-vous qu'Ollama est en cours d'exécution et que les modèles sont installés.")
         return
 
     try:
-        answer = generator.generate(user_input)
+        # Get conversation history (all messages except the new one we're about to add)
+        history = [msg for msg in st.session_state.messages if msg.get("role") in ("user", "assistant")]
+        answer = generator.generate(user_input, conversation_history=history)
 
         # Add assistant message
         st.session_state.messages.append(
@@ -112,6 +111,9 @@ def handle_user_input(user_input: str) -> None:
 
         # Save to history
         save_conversation()
+
+        # Rerun to display new messages
+        st.rerun()
 
     except Exception as e:
         st.error(f"Erreur lors de la génération: {str(e)}")
@@ -170,10 +172,7 @@ def main() -> None:
     # Main content
     st.title("🤖 Expert Angular")
 
-    st.markdown(
-        "Posez-moi vos questions sur Angular 17+ — "
-        "Réponses basées sur la documentation officielle."
-    )
+    st.markdown("Posez-moi vos questions sur Angular 17+ — Réponses basées sur la documentation officielle.")
 
     # Display chat
     for msg in st.session_state.messages:

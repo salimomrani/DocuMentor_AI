@@ -28,7 +28,7 @@ def main() -> None:
     elif command == "run":
         import subprocess
 
-        subprocess.run(["streamlit", "run", "src/ui/app.py"])
+        subprocess.run([".venv/bin/streamlit", "run", "src/ui/app.py"])
 
     else:
         print(f"Unknown command: {command}")
